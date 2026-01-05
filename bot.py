@@ -8,6 +8,7 @@ from main import delete_file
 from google_sheet import authentication_sheets
 from google_sheet import update_values
 from adapter import stock_json_to_sheet_data
+from main import update_differences_in_sheet
 
 
 IMAGE_FILE = "image_to_process.png"
@@ -35,22 +36,26 @@ def setup():
         if message.author == client.user:
             return
 
-        if message.content.startswith('$hello'):
-            await message.channel.send('Hello!')
-        
-        if len(message.attachments) != 0:
-            print(message.attachments[0].url)
-            download_image(message.attachments[0].url, IMAGE_FILE)
-            jsonresponsestring = send_image(IMAGE_FILE)
-            delete_file(IMAGE_FILE)
+        if message.content.startswith('$update'):
+            try:
+                stockpile = message.content.split(": ")[1]
 
-            sheet_list = stock_json_to_sheet_data(jsonresponsestring)
-            update_values(sheet_list)
+                if len(message.attachments) != 0:
+                    print(message.attachments[0].url)
+                    download_image(message.attachments[0].url, IMAGE_FILE)
+                    jsonresponsestring = send_image(IMAGE_FILE)
+                    delete_file(IMAGE_FILE)
+
+                    sheet_list = stock_json_to_sheet_data(jsonresponsestring)
+                    update_values(sheet_list, stockpile=stockpile)
+
+                    response = update_differences_in_sheet(stockpile)
 
 
+                    await message.channel.send(response)
+            except err:
+                await message.channel.send(err)
 
-            await message.channel.send('Updated stockpile')
-
-    client.run('DISCORD TOKEN GOES HERE')
+    client.run('DISCORD BOT TOKEN GOES HERE')
 
 setup()

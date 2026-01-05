@@ -11,8 +11,8 @@ SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = "1mrVluZuP-iJwieoRcJylSLV8nU0NkSdehJRJ2LH9fHo"
-SAMPLE_RANGE_NAME = "MaidenVeil!A:E"
-SAMPLE_WRITE_RANGE_NAME = "MaidenVeil!A3:B225"
+SAMPLE_RANGE_NAME = "!A:E"
+SAMPLE_WRITE_RANGE_NAME = "!A3:B900"
 HEADERS = [['STOCK', '', '', 'GOALS'], ['Quantity', 'Name', '', 'Quantity', 'Name']]
 creds = None
 
@@ -39,7 +39,7 @@ def authentication_sheets():
     # created automatically when the authorization flow completes for the first
     # time.
 
-def read(range = "MaidenVeil!A:E"):
+def read(range = "!A3:E2900", stockpile = "Kirknell"):
   
   if os.path.exists("token.json"):
     creds = Credentials.from_authorized_user_file("token.json", SCOPES)
@@ -52,7 +52,7 @@ def read(range = "MaidenVeil!A:E"):
     sheet = service.spreadsheets()
     result = (
         sheet.values()
-        .get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=range)
+        .get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=(stockpile+range))
         .execute()
     )
     values = result.get("values", [])
@@ -61,20 +61,13 @@ def read(range = "MaidenVeil!A:E"):
       print("No data found.")
       return
     
-    print(f"{values}")
 
-    i = 0
-    for row in values:
-      # Print columns A and E, which correspond to indices 0 and 4.
-        rowstr = ""
-        for pos in row:
-            rowstr += pos + " "
-        print(rowstr)
+    return values
   except HttpError as err:
     print(err)
 
 
-def update_values(_values, spreadsheet_id = SAMPLE_SPREADSHEET_ID, range_name = SAMPLE_WRITE_RANGE_NAME, value_input_option = 'USER_ENTERED'):
+def update_values(_values, spreadsheet_id = SAMPLE_SPREADSHEET_ID, range_name = SAMPLE_WRITE_RANGE_NAME, value_input_option = 'USER_ENTERED', stockpile="Kirknell"):
     if os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
   
@@ -84,7 +77,7 @@ def update_values(_values, spreadsheet_id = SAMPLE_SPREADSHEET_ID, range_name = 
         body = {'values': values}
         result = service.spreadsheets().values().update(
             spreadsheetId=spreadsheet_id,
-            range=range_name,
+            range=(stockpile+range_name),
             valueInputOption=value_input_option,
             body=body).execute()
         print(f"{result.get('updatedCells')} cells updated.")
@@ -92,3 +85,6 @@ def update_values(_values, spreadsheet_id = SAMPLE_SPREADSHEET_ID, range_name = 
     except HttpError as error:
         print(f"An error occurred: {error}")
         return error
+    
+
+read()
