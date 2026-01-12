@@ -57,6 +57,6 @@ def setup():
             except Exception as e:
                 await message.channel.send(str(traceback.format_exc()))
 
-    client.run('DISCORD API KEY GOES HERE')
+    client.run('')
 
 setup()

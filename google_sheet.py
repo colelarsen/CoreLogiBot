@@ -14,14 +14,15 @@ SAMPLE_SPREADSHEET_ID = "1mrVluZuP-iJwieoRcJylSLV8nU0NkSdehJRJ2LH9fHo"
 SAMPLE_RANGE_NAME = "!A:E"
 SAMPLE_WRITE_RANGE_NAME = "!A3:B900"
 HEADERS = [['STOCK', '', '', 'GOALS'], ['Quantity', 'Name', '', 'Quantity', 'Name']]
-creds = None
 
 
 
 
 
 def authentication_sheets():
-  creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+  creds = None
+  if os.path.exists("token.json"):
+    creds = Credentials.from_authorized_user_file('token.json', SCOPES)
   # If there are no (valid) credentials available, let the user log in.
   if not creds or not creds.valid:
     if creds and creds.expired and creds.refresh_token:
@@ -40,7 +41,7 @@ def authentication_sheets():
     # time.
 
 def read(range = "!A3:E2900", stockpile = "Kirknell"):
-  
+  creds = None
   if os.path.exists("token.json"):
     creds = Credentials.from_authorized_user_file("token.json", SCOPES)
   
@@ -85,6 +86,3 @@ def update_values(_values, spreadsheet_id = SAMPLE_SPREADSHEET_ID, range_name = 
     except HttpError as error:
         print(f"An error occurred: {error}")
         return error
-    
-
-read()
