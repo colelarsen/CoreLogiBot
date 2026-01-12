@@ -31,18 +31,18 @@ def delete_file(file_path):
 def update_differences_in_sheet(stockpile):
     human_readable_dif = ""
     update_vals = []
-    cur_sheet = read()
+    cur_sheet = read(stockpile=stockpile)
+    
     for row in cur_sheet:
         if len(row) >= 5:
-            item_name = row[4]
-            
+            item_name = row[4]            
             item_quantity = 0
             if row[3] != '':
                 item_quantity = int(row[3])
 
             difference = item_quantity
             for row in cur_sheet:
-                if row[1] == item_name:
+                if len(row) >= 2 and row[1] == item_name:
                     difference = item_quantity - int(row[0])
 
             if difference > 0:

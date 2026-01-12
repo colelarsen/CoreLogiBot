@@ -9,6 +9,7 @@ from google_sheet import authentication_sheets
 from google_sheet import update_values
 from adapter import stock_json_to_sheet_data
 from main import update_differences_in_sheet
+import traceback
 
 
 IMAGE_FILE = "image_to_process.png"
@@ -53,9 +54,9 @@ def setup():
 
 
                     await message.channel.send(response)
-            except err:
-                await message.channel.send(err)
+            except Exception as e:
+                await message.channel.send(str(traceback.format_exc()))
 
-    client.run('DISCORD BOT TOKEN GOES HERE')
+    client.run('DISCORD API KEY GOES HERE')
 
 setup()
